@@ -9,7 +9,9 @@ export const useRxRedux = (reducer, initialState) => {
     useEffect(()=>{
         store
         .pipe(scan(reducer, initialState))
-        .subscribe(newState=>setState(newState))
+        .subscribe(newState=>{
+            setState(newState)
+        })
     },[])
     return state
 }

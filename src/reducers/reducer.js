@@ -1,7 +1,7 @@
 
 export const initialState = {
 	count: 0,
-	showup: false
+	popup: false
 }
   
 export const reducer = (state=initialState, action) => {
@@ -15,6 +15,16 @@ export const reducer = (state=initialState, action) => {
 			return {
 				...state,
 				count: state.count-1
+			}
+		case 'SHOW_POPUP':
+			return {
+				...state,
+				popup: true
+			}
+		case 'HIDE_POPUP':
+			return {
+				...state,
+				popup: false
 			}
 	  default: return state
 	}
