@@ -1,0 +1,28 @@
+
+
+.counter-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.counter-container>span {
+    padding: 10px 0;
+    font-size: 1.2em;
+}
+
+.counter-contaiener>.buttons-wrapper {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.buttons-wrapper>button {
+    margin: 0 5px;
+    width: 30px;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.16);
+    padding: 3px 7px;
+    border-radius: 5px;
+    cursor: pointer;
+}
