@@ -1,68 +1,86 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Use-Rx-redux
 
-## Available Scripts
+This is a practice using RxJs with React Hooks to complete the basic state management of Redux.
 
-In the project directory, you can run:
+### How to start
 
-### `yarn start`
+```
+$ git clone https://github.com/tahsdj/use-rx-redux.git
+$ cd use-rx-redux
+$ yarn install
+$ yarn start
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Structure
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Use `Source` component on the root of your project to wrap all your custom React components.
+```jsx
+// App.js
+import React from 'react'
+import Source from './Source.js'
 
-### `yarn test`
+function App() {
+  return (
+    <Source>
+      /**
+      put all your components here
+      **/
+    </Source>
+  );
+}
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+export default App
+```
 
-### `yarn build`
+### Reducer and Source
+`Source` is a component which manages the global state from reducer and pass the state to its chidren components by using context.
+```jsx
+// Source.js
+import {reducer, initialState} from './reducers/reducer'
+import {useRxRedux, ContextStore} from './rx-context.js'
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const Source = ({children}) => {
+    const state = useRxRedux(reducer, initialState)
+    return (
+        <ContextStore.Provider value={{...state}}>
+            {children}
+        </ContextStore.Provider>
+    )
+}
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+export default Source
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### How to get/set states
 
-### `yarn eject`
+It is simple to get the state only by useContext API and keep the same concept of using actions as React-Redux.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```jsx
+// Counter.js
+import {producer} from '../store.js'
+import {ContextStore} from '../rx-context.js'
+import {plus, minus, plusWithAnimation} from '../actions/action'
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+const {dispatch} = producer
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+function Counter() {
+    const { count, popup } = useContext(ContextStore)
+    return (
+        <div className="counter-container">
+            <div className="buttons-wrapper">
+                <button onClick={()=>dispatch(plusWithAnimation())}>
+                    +1
+                </button>
+                {popup && <div className="popup">+{count}</div>}
+            </div>
+            <span>{count}</span>
+        </div>
+    )
+}
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+export default Counter
+```
 
-## Learn More
+## Action
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Action can be a simple function which returns a value(state) or an observable object.
