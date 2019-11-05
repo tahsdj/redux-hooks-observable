@@ -34,9 +34,9 @@ class StateProducer {
 }
 
 export const producer = new StateProducer()
-console.log('producer: ', producer)
+
 export const store = fromEventPattern(
   (handler) => producer.addListener(handler), 
   (handler) => producer.removeListener(handler)
 )
-console.log('producer: ', producer)
+
