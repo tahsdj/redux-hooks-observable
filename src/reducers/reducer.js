@@ -5,13 +5,14 @@ export const initialState = {
 }
   
 export const reducer = (state=initialState, action) => {
+	console.log('state: ', state)
 	switch(action.type) {
-	  case 'PLUS':
+	  	case 'PLUS':
 			return {
 				...state,
 				count: state.count+1
 			}
-	  case 'MINUS':
+	  	case 'MINUS':
 			return {
 				...state,
 				count: state.count-1
@@ -19,13 +20,14 @@ export const reducer = (state=initialState, action) => {
 		case 'SHOW_POPUP':
 			return {
 				...state,
-				popup: true
+				popup: true,
+				count: state.count+1
 			}
 		case 'HIDE_POPUP':
 			return {
 				...state,
 				popup: false
 			}
-	  default: return state
+	  	default: return state
 	}
 }

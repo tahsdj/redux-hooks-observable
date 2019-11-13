@@ -1,9 +1,11 @@
-import {Observable,fromEventPattern} from 'rxjs'
+import {Observable,fromEventPattern, Subject, of} from 'rxjs'
+import {merge, mapTo} from 'rxjs/operators'
 
 class StateProducer {
 	constructor() {
-        this.listeners = [];
+        this.listeners = []
         this.dispatch = this.dispatch.bind(this)
+        this.subject = new Subject()
 	}
 	addListener(listener) {
 		if(typeof listener === 'function') {
@@ -14,10 +16,16 @@ class StateProducer {
 	}
 	removeListener(listener) {
 		this.listeners.splice(this.listeners.indexOf(listener), 1)
-	}
+    }
+    combineWithEpics() {
+        
+    }
+    passs(action) {
+        const $action = of(action)
+        const streem = merge(...this.epics.map( f => f($action)))
+    }
 	dispatch(message) {
-    
-        // if input is observable, subscribe the event
+        // this.subject
         if ( message instanceof Observable) {
             message
                 .subscribe( e => {
@@ -40,3 +48,22 @@ export const store = fromEventPattern(
   (handler) => producer.removeListener(handler)
 )
 
+
+
+export const combineWithEpics = (epics) => ($o) => $o.pipe(merge(...epics.map(e=>e($o))))
+
+class controller {
+    constructor() {
+        this.subject = new Subject()
+        this.source = this.subject
+        this.dispatch = this.dispatch.bind(this)
+    }
+    run($rootEpics) {
+        this.source = $rootEpics(this.subject)
+    }
+    dispatch(action) {
+        this.subject.next(action)
+    }
+}
+
+export const Store = new controller()
