@@ -11,20 +11,28 @@ $ yarn install
 $ yarn start
 ```
 
-### Structure
+### How to use
 
-Use `Source` component on the root of your project to wrap all your custom React components.
+Use `Source` component on the root of your project to wrap all your custom React components. `Source` needs three props which are `reducer`, `initialState` and `store`. `Store` is a object which combines with the rxjs and dispatch the action. 
 ```jsx
 // App.js
 import React from 'react'
-import Source from './Source.js'
+import {Store, combineWithEpics} from './lib/store'
+import Source from './lib/source'
+
+const $rootEpic = combineWithEpics([epic1, epic2])
+Store.run($rootEpic)
 
 function App() {
   return (
-    <Source>
-      /**
-      put all your components here
-      **/
+    <Source
+        reducer={reducer}
+        initialState={initialState}
+        store={Store}
+        >
+        /**
+         put all your components here
+        **/
     </Source>
   );
 }
@@ -32,46 +40,25 @@ function App() {
 export default App
 ```
 
-### Reducer and Source
-`Source` is a component which manages the global state from reducer and pass the state to its chidren components by using context.
-```jsx
-// Source.js
-import {reducer, initialState} from './reducers/reducer'
-import {useRxRedux, ContextStore} from './rx-context.js'
-
-const Source = ({children}) => {
-    const state = useRxRedux(reducer, initialState)
-    return (
-        <ContextStore.Provider value={{...state}}>
-            {children}
-        </ContextStore.Provider>
-    )
-}
-
-export default Source
-```
-
 ### How to get/set states
 
-It is simple to get the state only by useContext API and keep the same concept of using actions as React-Redux.
+It is simple to get the state only by useContext API and keep the same concept of dispatching an actions as React-Redux.
 
 ```jsx
 // Counter.js
-import {producer} from '../store.js'
-import {ContextStore} from '../rx-context.js'
-import {plus, minus, plusWithAnimation} from '../actions/action'
+import React, {useContext} from 'react'
+import {Store} from '../lib/store'
+import {SourceStore} from '../lib/source'
 
-const {dispatch} = producer
+const {dispatch} = Store
 
 function Counter() {
     const { count, popup } = useContext(ContextStore)
     return (
-        <div className="counter-container">
+         <div className="counter-container">
             <div className="buttons-wrapper">
-                <button onClick={()=>dispatch(plusWithAnimation())}>
-                    +1
-                </button>
-                {popup && <div className="popup">+{count}</div>}
+                <button onClick={()=>dispatch({type: 'PLUS'})}>+1</button>
+                <button onClick={()=>dispatch({type: 'MINUS'})}>-1</button>
             </div>
             <span>{count}</span>
         </div>
@@ -81,6 +68,17 @@ function Counter() {
 export default Counter
 ```
 
-## Action
+## Epic
 
-Action can be a simple function which returns a value(state) or an observable object.
+Each epic is a function similar to redux-observable which recieves an observable and return an observable stream
+
+```javascript
+// example epic
+const epic = $action => 
+    $action
+        .pipe(
+            filter(ation=>action.type === 'PLUS'),
+            delay(1000),
+            mapTo({type: 'MINUS'})
+        )
+```
