@@ -53,7 +53,7 @@ import {SourceStore} from '../lib/source'
 const {dispatch} = Store
 
 function Counter() {
-    const { count, popup } = useContext(ContextStore)
+    const { count, popup } = useContext(SourceStore)
     return (
          <div className="counter-container">
             <div className="buttons-wrapper">
